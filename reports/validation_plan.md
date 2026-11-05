@@ -22,3 +22,4 @@
 - Naive (last observed value)
 - Seasonal Naive (value from 7 days ago or 28 days ago)
 - Moving Average (trailing window)
+
