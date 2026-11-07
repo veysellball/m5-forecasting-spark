@@ -29,3 +29,16 @@ cal.groupBy("weekday").applyInPandas(first_row, "weekday string, d string").show
 # COMMAND ----------
 
 # MAGIC %pip install statsforecast
+
+
+
+# COMMAND ----------
+# MAGIC %md
+# MAGIC ## Step 3.1: Read the raw files
+# COMMAND ----------
+from pyspark.sql import functions as F
+RAW = "/Volumes/workspace/m5/raw"
+sales_wide = spark.read.csv(f"{RAW}/sales_train_evaluation.csv", header=True)
+calendar   = spark.read.csv(f"{RAW}/calendar.csv", header=True)
+prices     = spark.read.csv(f"{RAW}/sell_prices.csv", header=True)
+print("Sales wide sütun sayısı:", len(sales_wide.columns))
