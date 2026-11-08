@@ -1,4 +1,11 @@
 # Databricks notebook source
+# /// script
+# [tool.databricks.environment]
+# environment_version = "6"
+# dependencies = [
+#   "statsforecast",
+# ]
+# ///
 # MAGIC %md
 # MAGIC # Step 3: Ingest and Reshape
 # MAGIC Pipeline to ingest raw M5 CSV files, unpivot to long format, and build the base table.
