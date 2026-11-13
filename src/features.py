@@ -100,3 +100,37 @@ def build_features(base: DataFrame) -> DataFrame:
     df = add_rolling_features(df)
     df = add_calendar_features(df)
     return add_price_features(df)
+
+
+def series_scale_and_weight(base: DataFrame, cutoff: int, horizon: int = HORIZON) -> DataFrame:
+    """Per series: RMSSE scale (from first non-zero sale to cutoff), revenue weight
+    (dollar sales in the last `horizon` training days), and days of history.
+    Computed strictly from training data up to cutoff.
+    """
+    hist = base.filter(F.col("d_num") <= cutoff)
+    n_hist = hist.groupBy("id").agg(F.count("*").alias("n_hist"))
+    first_sale = (
+        hist.filter("sales > 0")
+        .groupBy("id")
+        .agg(F.min("d_num").alias("first_sale"))
+    )
+    w = Window.partitionBy("id").orderBy("d_num")
+    scale = (
+        hist.join(first_sale, "id")
+        .filter(F.col("d_num") >= F.col("first_sale"))
+        .withColumn("sq_diff", F.pow(F.col("sales") - F.lag("sales", 1).over(w), 2))
+        .groupBy("id")
+        .agg(F.avg("sq_diff").alias("scale"))
+    )
+    revenue = (
+        hist.filter(F.col("d_num") > cutoff - horizon)
+        .groupBy("id")
+        .agg(F.sum(F.col("sales") * F.col("sell_price")).alias("revenue"))
+    )
+    total = revenue.agg(F.sum("revenue")).first()[0]
+    return (
+        scale.join(revenue, "id", "left").fillna(0.0, ["revenue"])
+        .join(n_hist, "id", "left")
+        .withColumn("weight", F.col("revenue") / F.lit(total))
+        .withColumn("cutoff", F.lit(cutoff))
+    )
