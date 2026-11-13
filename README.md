@@ -1,5 +1,7 @@
 # M5 Forecasting at Scale (PySpark & LightGBM)
 
+![tests](https://github.com/veysellball/m5-forecasting-spark/actions/workflows/tests.yml/badge.svg)
+
 > **Goal:** Forecast 28 days of daily unit sales for every item in every store of the Walmart M5 dataset (30,490 series), build feature engineering pipelines in PySpark on Databricks, test leakage-free lag generation, and produce calibrated prediction intervals for store replenishment.
 
 ## Architecture
