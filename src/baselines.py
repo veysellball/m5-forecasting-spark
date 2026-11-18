@@ -1,6 +1,6 @@
 import pandas as pd
 
-HISTORY_DAYS = 730  # ETS on the last 2 years; older history adds cost, not accuracy
+HISTORY_DAYS = 365  # ETS on the last 1 year; saves compute/time while retaining seasonality
 
 OUT_COLS = ["id", "fold", "d_num", "model", "yhat", "lo80", "hi80"]
 
